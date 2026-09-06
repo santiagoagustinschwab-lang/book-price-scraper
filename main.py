@@ -1,50 +1,50 @@
-# Importa las librerias request, que es para pedir informacion a citios web, y de bs4 Beautifulsoup, que da el html crudo del citio
+# Imports the request library, which is used to request information from websites, and BeautifulSoup from bs4, which provides the raw HTML of the site
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
 
-# Se guarda en la variable respuesta el pedido de request del citio books to scrape
+# The request to the books to scrape site is stored in the response variable
 respuesta = requests.get("https://books.toscrape.com/?")
 respuesta.encoding = "utf-8"
-# Luego se guarda en la variable sopa la "transformacion" del request del citio a algo legible, los atrivutos .text returnan los datos sin las etiquetas, y "html.parser" es un "traductor de html"
+# Then the "transformation" of the site's request into something readable is stored in the sopa variable. The .text attributes return the data without the tags, and "html.parser" is an HTML "translator"
 sopa = BeautifulSoup(respuesta.text, "html.parser")
 
-# Luego se guarda en la variable precios la funcion finAll a sopa donde busca todas las etiquetas "p" que tengan la clase "price_color"
+# Then the findAll function is used on sopa and stored in the precios variable, where it searches for all "p" tags that have the "price_color" class
 precios = sopa.findAll("p", class_="price_color")
 
 lista_de_precios = []
 lista_de_titulos = []
 libros = []
 
-# Aqui se recorre "precio" en precios para que imprima todos los elementos en precios con el atributo .text asi eliminan las etiquetas y da un resulktado mas limpio
+# Here "precio" is iterated through precios so that all the elements in precios are printed using the .text attribute, removing the tags and giving a cleaner result
 for precio in precios:
     print(precio.text)
     lista_de_precios.append(precio.text)
 
-# Aqui se repite lo mismo pero con titulos
+# Here the same thing is repeated but with titles
 titulos = sopa.findAll("a", title=True)
 
 for titulo in titulos:
     print(titulo["title"])
     lista_de_titulos.append(titulo["title"])
 
-# Luego se empaqueta precio y titulo en las dos listas con zip(), despues se define la variable libro como un diccionario encabezado por "titulo":titulo que guarda los titulos y "precio":precio que guarda los precios, luego agrega el diccionario a la lista libros
+# Then price and title are packaged into the two lists using zip(). After that, the libro variable is defined as a dictionary headed by "titulo":titulo, which stores the titles, and "precio":precio, which stores the prices. Then the dictionary is added to the libros list
 for precio, titulo in zip(lista_de_precios, lista_de_titulos):
     libro = {"titulo": titulo, "precio": precio}
     libros.append(libro)
 
-# Finalizando se guarda en la variable wb Workbook() la cual crea un archibo de exel vacio en memoria
+# Finally, the wb variable stores Workbook(), which creates an empty Excel file in memory
 wb = Workbook()
 
-# Se guarda en la vaariable hoja la "sheet" o hoja de exel activa, por defecto la primera
+# The hoja variable stores the active "sheet" or Excel worksheet, which is the first one by default
 hoja = wb.active
 
-# Agrega al encabezado de la hoja titulos | precios
+# Adds the headers Titulos | Precios to the worksheet
 hoja.append(["Titulos", "Precios"])
 
-# Recorre libro en libros (que ya es una lista dew diccionarios de los titulos y precios)y agrega a hoja libro["titulos"] que almacena los titulos, y precio que almacena los precios
+# Iterates through libro in libros (which is already a list of dictionaries containing the titles and prices) and adds libro["titulos"] to hoja, which stores the titles, and precio, which stores the prices
 for libro in libros:
     hoja.append([libro["titulo"], libro["precio"]])
 
-# Finalmente se guarda en un archibo xlsx (exel) en la carpeta donde se ubica el archibo .py
+# Finally, the xlsx (Excel) file is saved in the folder where the .py file is located
 wb.save("Libros.xlsx")
