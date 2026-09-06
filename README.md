@@ -1,7 +1,5 @@
 # book-price-scraper
 
-# Book Price Scraper
-
 Python script that extracts book titles and prices from 
 books.toscrape.com and saves the results into an Excel file.
 
