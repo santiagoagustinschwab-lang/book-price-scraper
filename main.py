@@ -14,6 +14,7 @@ html = BeautifulSoup(web.text, "html.parser")
 prices = html.findAll("p", class_="price_color")
 titles = html.findAll("a", title=True)
 
+# Empty lists are created to store the prices, titles, and final book information
 price_list = []
 title_list = []
 books = []
@@ -23,6 +24,7 @@ for price in prices:
     print(price.text)
     price_list.append(price.text)
 
+# Here "title" is iterated through titles so that the title attribute of each element is printed and added to the title_list
 for title in titles:
     print(title["title"])
     title_list.append(title["title"])
