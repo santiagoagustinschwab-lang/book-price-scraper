@@ -3,48 +3,47 @@ import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
 
-# The request to the books to scrape site is stored in the response variable
-respuesta = requests.get("https://books.toscrape.com/?")
-respuesta.encoding = "utf-8"
-# Then the "transformation" of the site's request into something readable is stored in the sopa variable. The .text attributes return the data without the tags, and "html.parser" is an HTML "translator"
-sopa = BeautifulSoup(respuesta.text, "html.parser")
+# The request to the books to scrape site is stored in the web variable
+web = requests.get("https://books.toscrape.com/?")
+web.encoding = "utf-8"
 
-# Then the findAll function is used on sopa and stored in the precios variable, where it searches for all "p" tags that have the "price_color" class
-precios = sopa.findAll("p", class_="price_color")
+# Then the "transformation" of the site's request into something readable is stored in the html variable. The .text attribute returns the data without the tags, and "html.parser" is an HTML "translator"
+html = BeautifulSoup(web.text, "html.parser")
 
-lista_de_precios = []
-lista_de_titulos = []
-libros = []
+# Then the findAll function is used on html and stored in the prices variable, where it searches for all "p" tags that have the "price_color" class
+prices = html.findAll("p", class_="price_color")
+titles = html.findAll("a", title=True)
 
-# Here "precio" is iterated through precios so that all the elements in precios are printed using the .text attribute, removing the tags and giving a cleaner result
-for precio in precios:
-    print(precio.text)
-    lista_de_precios.append(precio.text)
+price_list = []
+title_list = []
+books = []
 
-# Here the same thing is repeated but with titles
-titulos = sopa.findAll("a", title=True)
+# Here "price" is iterated through prices so that all the elements in prices are printed using the .text attribute, removing the tags and giving a cleaner result
+for price in prices:
+    print(price.text)
+    price_list.append(price.text)
 
-for titulo in titulos:
-    print(titulo["title"])
-    lista_de_titulos.append(titulo["title"])
+for title in titles:
+    print(title["title"])
+    title_list.append(title["title"])
 
-# Then price and title are packaged into the two lists using zip(). After that, the libro variable is defined as a dictionary headed by "titulo":titulo, which stores the titles, and "precio":precio, which stores the prices. Then the dictionary is added to the libros list
-for precio, titulo in zip(lista_de_precios, lista_de_titulos):
-    libro = {"titulo": titulo, "precio": precio}
-    libros.append(libro)
+# Then price and title are packaged into the two lists using zip(). After that, the book variable is defined as a dictionary headed by "title": title, which stores the titles, and "price": price, which stores the prices. Then the dictionary is added to the books list
+for price, title in zip(price_list, title_list):
+    book = {"title": title, "price": price}
+    books.append(book)
 
 # Finally, the wb variable stores Workbook(), which creates an empty Excel file in memory
 wb = Workbook()
 
-# The hoja variable stores the active "sheet" or Excel worksheet, which is the first one by default
-hoja = wb.active
+# The sheet variable stores the active "sheet" or Excel worksheet, which is the first one by default
+sheet = wb.active
 
-# Adds the headers Titulos | Precios to the worksheet
-hoja.append(["Titulos", "Precios"])
+# Adds the headers Titles | Prices to the worksheet
+sheet.append(["Titles", "Prices"])
 
-# Iterates through libro in libros (which is already a list of dictionaries containing the titles and prices) and adds libro["titulos"] to hoja, which stores the titles, and precio, which stores the prices
-for libro in libros:
-    hoja.append([libro["titulo"], libro["precio"]])
+# Iterates through book in books (which is already a list of dictionaries containing the titles and prices) and adds book["title"] to sheet, which stores the titles, and book["price"], which stores the prices
+for book in books:
+    sheet.append([book["title"], book["price"]])
 
 # Finally, the xlsx (Excel) file is saved in the folder where the .py file is located
-wb.save("Libros.xlsx")
+wb.save("Books.xlsx")
