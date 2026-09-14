@@ -1,4 +1,6 @@
 import requests
+import time
+import random
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
 
@@ -40,6 +42,8 @@ for i in num_pages:
     except ValueError as error:
         # If this page failed, just report it and move on to the next one
         print(f"Error {error}")
+
+    time.sleep(random.uniform(1, 3))
 
 # Once every page has been collected, combine titles and prices into a list of dictionaries
 for title, price in zip(titles_list, prices_list):
