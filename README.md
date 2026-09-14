@@ -8,6 +8,8 @@ books.toscrape.com and saves the results into an Excel file.
 - requests
 - BeautifulSoup4
 - openpyxl
+-time
+-random
 
 ## How to run it
 1. Install dependencies: `pip install requests beautifulsoup4 openpyxl`
